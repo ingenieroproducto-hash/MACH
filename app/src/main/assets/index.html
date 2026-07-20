@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#f4f6f5">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="MACH">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/mach-192.png">
+  <title>MACH — Control de entregas</title>
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand"><div class="brandmark">MACH</div><div><strong>Control</strong><small>Seguimiento de entregas</small></div></div>
+    <div class="navlabel">Operación</div>
+    <button class="navbtn active" data-view="resumen"><span class="ico">▦</span><span>Resumen</span></button>
+    <button class="navbtn" data-view="entregas"><span class="ico">⇄</span><span>Entregas</span><span class="count" id="navDeliveryCount">0</span></button>
+    <button class="navbtn" data-view="planeacion"><span class="ico">□</span><span>Planeación</span></button>
+    <div class="navlabel">Administración</div>
+    <button class="navbtn" data-view="clientes"><span class="ico">◇</span><span>Clientes y tarifas</span></button>
+    <button class="navbtn" data-view="personal"><span class="ico">♙</span><span>Personal y pagos</span></button>
+    <button class="navbtn" data-view="finanzas"><span class="ico">$</span><span>Cuentas</span></button>
+    <button class="navbtn" data-view="reportes"><span class="ico">⌁</span><span>Reportes</span></button>
+    <div class="navlabel">Sistema</div>
+    <button class="navbtn" data-view="configuracion"><span class="ico">⚙</span><span>Configuración</span></button>
+    <div class="sidefoot">Guardado automático activo<br><br>MACH / App 1.5</div>
+  </aside>
+
+  <section class="main">
+    <header class="topbar">
+      <div><h1 id="topTitle">Resumen operativo</h1><div class="sub" id="topSub">Seguimiento de entregas en tiempo real</div></div>
+      <div class="topactions">
+        <button class="btn" id="installAppBtn" hidden>Instalar app</button>
+        <span class="save-state" id="saveIndicator"><i></i>Guardado</span>
+        <button class="btn" id="exportBtn">Exportar respaldo</button>
+        <button class="btn primary" id="newDeliveryBtn">＋ Nueva entrega</button>
+      </div>
+    </header>
+
+    <main class="content">
+      <section class="view active" id="view-resumen">
+        <div class="pagehead"><div><h2>Control del día</h2><p id="todayLabel"></p></div><button class="btn small" data-go="entregas">Ver todas las entregas</button></div>
+        <div class="cards" id="dashboardCards"></div>
+        <div class="grid2">
+          <div class="panel"><div class="panelhead"><div><h3>Operación por estatus</h3><p>Entregas activas distribuidas por etapa</p></div></div><div class="panelbody"><div class="status-list" id="statusSummary"></div></div></div>
+          <div class="panel"><div class="panelhead"><div><h3>Actividad reciente</h3><p>Últimos cambios registrados</p></div></div><div class="panelbody activity" id="recentActivity"></div></div>
+        </div>
+      </section>
+
+      <section class="view" id="view-entregas">
+        <div class="pagehead"><div><h2>Entregas</h2><p>Una fila por confirmación y seguimiento completo por etapas.</p></div></div>
+        <div class="toolbar">
+          <label class="filter-search"><span>Buscar</span><input class="fieldlike search" id="deliverySearch" placeholder="Confirmación, cliente, operador o determinante"></label>
+          <label class="filter-control"><span>Estatus</span><select class="fieldlike" id="filterStatus"><option value="">Todos</option></select></label>
+          <label class="filter-control"><span>Determinante</span><select class="fieldlike" id="filterDet"><option value="">Todas</option><option>7493</option><option>5907</option><option>7460</option></select></label>
+          <div class="date-range"><label><span>Desde</span><input type="date" class="fieldlike" id="filterDateFrom"></label><i>—</i><label><span>Hasta</span><input type="date" class="fieldlike" id="filterDateTo"></label></div>
+          <button class="btn small clear-filter" id="clearFilters">Limpiar filtros</button>
+        </div>
+        <div class="tablewrap"><table class="data-table"><thead><tr><th>Confirmación</th><th>Cita</th><th>Cliente</th><th>Det.</th><th>Seguimiento</th><th>Estatus actual</th><th>Transportista / operador</th><th>Última actualización</th><th>Finanzas</th><th></th></tr></thead><tbody id="deliveryRows"></tbody></table></div>
+      </section>
+
+      <section class="view" id="view-planeacion">
+        <div class="pagehead"><div><h2>Planeación</h2><p>Agenda de entregas organizada por fecha y hora de cita.</p></div><button class="btn primary" data-new-delivery>＋ Programar entrega</button></div>
+        <div class="panel"><div class="panelhead"><div><h3>Próximas citas</h3><p>Orden cronológico de la operación</p></div></div><div class="tablewrap" style="border:0"><table class="data-table" style="min-width:850px"><thead><tr><th>Fecha</th><th>Hora</th><th>Confirmación</th><th>Cliente</th><th>Determinante</th><th>Equipo</th><th>Transportista</th><th>Estatus</th></tr></thead><tbody id="planningRows"></tbody></table></div></div>
+      </section>
+
+      <section class="view" id="view-clientes">
+        <div class="pagehead"><div><h2>Clientes y tarifas</h2><p>Costos fijos y conceptos adicionales aplicables por entrega.</p></div><button class="btn primary" id="newClientBtn">＋ Nuevo cliente</button></div>
+        <div class="clientcards" id="clientCards"></div>
+      </section>
+
+      <section class="view" id="view-personal">
+        <div class="pagehead"><div><h2>Personal y pagos</h2><p>Control de colaboradores, tarifa por servicio y acumulados.</p></div><button class="btn primary" id="newWorkerBtn">＋ Nuevo trabajador</button></div>
+        <div class="tablewrap" style="border-top:1px solid var(--line);border-radius:var(--radius)"><table class="data-table" style="min-width:760px"><thead><tr><th>Trabajador</th><th>Teléfono</th><th>Tarifa base</th><th>Entregas asignadas</th><th>Por pagar</th><th>Pagado</th><th></th></tr></thead><tbody id="workerRows"></tbody></table></div>
+      </section>
+
+      <section class="view" id="view-finanzas">
+        <div class="pagehead"><div><h2>Cuentas</h2><p>Ingresos, costos y utilidad vinculados con cada confirmación.</p></div></div>
+        <div class="cards" id="financeCards"></div>
+        <div class="panel"><div class="tabs"><button class="tab active" data-fin-tab="all">Todas</button><button class="tab" data-fin-tab="receivable">Cuentas por cobrar</button><button class="tab" data-fin-tab="payable">Cuentas por pagar</button></div><div class="tablewrap" style="border:0"><table class="data-table" style="min-width:930px"><thead><tr><th>Confirmación</th><th>Cliente</th><th>Fecha</th><th>Ingreso</th><th>Costo</th><th>Utilidad</th><th>Cobro</th><th>Pago</th><th></th></tr></thead><tbody id="financeRows"></tbody></table></div></div>
+      </section>
+
+      <section class="view" id="view-reportes">
+        <div class="pagehead"><div><h2>Reportes</h2><p>Comportamiento operativo y rentabilidad de las entregas.</p></div><button class="btn" id="csvBtn">Descargar CSV</button></div>
+        <div class="cards" id="reportCards"></div>
+        <div class="reportgrid">
+          <div class="panel"><div class="panelhead"><div><h3>Entregas por determinante</h3><p>Volumen registrado</p></div></div><div class="panelbody"><div class="chart" id="detChart"></div></div></div>
+          <div class="panel"><div class="panelhead"><div><h3>Utilidad por cliente</h3><p>Ingreso menos costos registrados</p></div></div><div class="panelbody"><div class="chart" id="clientChart"></div></div></div>
+        </div>
+      </section>
+
+      <section class="view" id="view-configuracion">
+        <div class="pagehead"><div><h2>Configuración</h2><p>Catálogos, respaldo y comportamiento general.</p></div></div>
+        <div class="grid2">
+          <div class="panel"><div class="panelhead"><div><h3>Determinantes</h3><p>Asocia cada código con el destino de entrega.</p></div></div><div class="panelbody"><div class="formgrid" id="determinantSettings"></div><div style="margin-top:12px"><button class="btn dark" id="saveSettings">Guardar cambios</button></div></div></div>
+          <div class="panel"><div class="panelhead"><div><h3>Datos y respaldo</h3><p>Administra la información almacenada.</p></div></div><div class="panelbody" style="display:grid;gap:9px"><button class="btn" id="importBtn">Importar respaldo JSON</button><input type="file" id="importFile" accept="application/json" hidden><button class="btn" id="seedBtn">Restaurar datos de ejemplo</button><button class="btn danger" id="clearDataBtn">Eliminar todos los datos</button></div></div>
+        </div>
+      </section>
+    </main>
+  </section>
+</div>
+
+<nav class="mobilebar"><button class="active" data-view="resumen"><b>▦</b>Resumen</button><button data-view="entregas"><b>⇄</b>Entregas</button><button data-new-delivery><b>＋</b>Nueva</button><button data-view="finanzas"><b>$</b>Cuentas</button><button data-view="reportes"><b>⌁</b>Reportes</button></nav>
+
+<div class="modalback" id="deliveryModal"><div class="modal"><div class="modalhead"><h3 id="deliveryModalTitle">Nueva entrega</h3><button class="close" data-close>×</button></div><form id="deliveryForm"><div class="modalbody"><div class="formgrid">
+  <input type="hidden" id="deliveryId">
+  <label><span class="label">Confirmación *</span><input class="input" id="confirmation" required placeholder="Ej. 84571623"></label>
+  <label><span class="label">Cliente *</span><select class="input" id="deliveryClient" required></select></label>
+  <label><span class="label">Fecha de cita *</span><input type="date" class="input" id="appointmentDate" required></label>
+  <label><span class="label">Hora de cita *</span><input type="time" class="input" id="appointmentTime" required></label>
+  <label><span class="label">Determinante *</span><select class="input" id="determinant" required><option value="">Seleccionar</option><option>7493</option><option>5907</option><option>7460</option></select></label>
+  <label><span class="label">Línea transportista</span><input class="input" id="carrier" placeholder="Nombre de la línea"></label>
+  <label><span class="label">Nombre del operador</span><input class="input" id="operatorName" placeholder="Nombre completo"></label>
+  <label><span class="label">Teléfono del operador</span><input class="input" id="operatorPhone" placeholder="10 dígitos"></label>
+  <label class="full"><span class="label">Personal asignado</span><select class="input" id="assignedWorkers" multiple style="height:76px;padding:6px"></select></label>
+  <label><span class="label">Tarifa de venta</span><input type="number" step=".01" min="0" class="input" id="baseCharge"></label>
+  <label><span class="label">Cargos adicionales</span><input type="number" step=".01" min="0" class="input" id="extraCharge" value="0"></label>
+  <label><span class="label">Otros costos</span><input type="number" step=".01" min="0" class="input" id="otherCost" value="0"></label>
+  <label><span class="label">Estado de cobro</span><select class="input" id="collectionStatus"><option>Pendiente</option><option>Facturado</option><option>Cobrado</option></select></label>
+  <label><span class="label">Estado de pago</span><select class="input" id="paymentStatus"><option>Pendiente</option><option>Pagado</option></select></label>
+  <label class="full"><span class="label">Notas de planeación</span><textarea class="input" id="notes" placeholder="Indicaciones, referencias o requisitos de la entrega"></textarea></label>
+</div></div><div class="modalfoot"><button type="button" class="btn" data-close>Cancelar</button><button class="btn primary" type="submit">Guardar entrega</button></div></form></div></div>
+
+<div class="modalback" id="detailModal"><div class="modal wide"><div class="modalhead"><h3>Expediente de entrega</h3><button class="close" data-close>×</button></div><div class="modalbody" id="detailContent"></div><div class="modalfoot"><button class="btn danger" id="deleteDeliveryBtn">Eliminar</button><button class="btn" id="editDeliveryBtn">Editar</button><button class="btn dark" id="copyStatusBtn">Copiar actualización</button><button class="btn primary" id="advanceBtn">Avanzar estatus</button></div></div></div>
+
+<div class="modalback" id="clientModal"><div class="modal"><div class="modalhead"><h3>Cliente y tarifas</h3><button class="close" data-close>×</button></div><form id="clientForm"><div class="modalbody"><div class="formgrid"><input type="hidden" id="clientId"><label><span class="label">Nombre del cliente *</span><input class="input" id="clientName" required></label><label><span class="label">Tarifa fija por entrega *</span><input type="number" step=".01" min="0" class="input" id="clientRate" required></label><label><span class="label">Espera por hora</span><input type="number" step=".01" min="0" class="input" id="clientWait" value="0"></label><label><span class="label">Segundo intento</span><input type="number" step=".01" min="0" class="input" id="clientRetry" value="0"></label><label class="full"><span class="label">Otros adicionales disponibles</span><input class="input" id="clientExtras" placeholder="Ej. maniobra especial, personal adicional"></label></div></div><div class="modalfoot"><button type="button" class="btn" data-close>Cancelar</button><button class="btn primary">Guardar cliente</button></div></form></div></div>
+
+<div class="modalback" id="workerModal"><div class="modal"><div class="modalhead"><h3>Trabajador</h3><button class="close" data-close>×</button></div><form id="workerForm"><div class="modalbody"><div class="formgrid"><input type="hidden" id="workerId"><label><span class="label">Nombre *</span><input class="input" id="workerName" required></label><label><span class="label">Teléfono</span><input class="input" id="workerPhone"></label><label><span class="label">Tarifa por entrega *</span><input type="number" step=".01" min="0" class="input" id="workerRate" required></label><label><span class="label">Estatus</span><select class="input" id="workerActive"><option value="true">Activo</option><option value="false">Inactivo</option></select></label></div></div><div class="modalfoot"><button type="button" class="btn" data-close>Cancelar</button><button class="btn primary">Guardar trabajador</button></div></form></div></div>
+
+<div class="toast" id="toast"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
