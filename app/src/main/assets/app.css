@@ -74,3 +74,14 @@
     /* V1.5 — INSTALLABLE APP + SAVE STATE */
     .save-state{height:30px;display:inline-flex;align-items:center;gap:6px;padding:0 8px;color:#7f8b87;font:700 8px ui-monospace,SFMono-Regular,Consolas,monospace;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}.save-state i{width:6px;height:6px;border-radius:50%;background:var(--green);transition:.2s}.save-state.saving i{background:var(--amber);box-shadow:0 0 0 3px rgba(185,128,40,.1)}#installAppBtn{border-color:#83aeb6;color:#1b7382;background:#f2fafb}
     @media(max-width:760px){.save-state{width:18px;padding:0;font-size:0}.save-state i{width:7px;height:7px}.topactions #installAppBtn:not([hidden]){display:inline-flex;height:36px;padding:0 8px;font-size:8px}.topactions #exportBtn{display:none}}
+
+    /* V1.3 — MOBILE CLIENTS, EMPLOYEES AND ADMIN MENU */
+    .mobile-more{display:none}.mobile-more.open{display:none}
+    @media(max-width:760px){
+      .mobilebar{display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr));gap:0}.mobilebar button{min-width:0!important;padding:2px 1px;font-size:7px}.mobilebar button b{font-size:14px}
+      .mobile-more.open{display:flex;align-items:flex-end;background:rgba(23,32,37,.35);padding:0}
+      .more-sheet{width:100%;background:#fff;border-radius:16px 16px 0 0;padding:16px 14px calc(18px + env(safe-area-inset-bottom));box-shadow:0 -16px 45px rgba(23,32,37,.13)}
+      .more-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.more-head strong{display:block;font-size:14px}.more-head span{display:block;color:var(--muted);font-size:9px;margin-top:3px}
+      .more-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.more-grid button{height:70px;border:1px solid var(--line);border-radius:8px;background:#f8faf9;color:var(--ink);display:flex;align-items:center;gap:11px;padding:0 14px;text-align:left}.more-grid button b{width:30px;height:30px;border-radius:5px;background:#e7f0ee;color:var(--accent);display:grid;place-items:center;font-size:14px}.more-grid button span{font-size:11px;font-weight:750}
+      #view-clientes .clientcards{grid-template-columns:1fr}#view-clientes .pagehead>.btn,#view-personal .pagehead>.btn{width:100%;margin:2px 0 0;height:42px}
+    }
