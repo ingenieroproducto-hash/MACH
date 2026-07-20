@@ -22,6 +22,9 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            getWindow().setDecorFitsSystemWindows(true);
+        }
         getWindow().setStatusBarColor(Color.rgb(244, 246, 245));
         getWindow().setNavigationBarColor(Color.WHITE);
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
@@ -29,11 +32,14 @@ public class MainActivity extends Activity {
         webView = new WebView(this);
         setContentView(webView);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        if (Build.VERSION.SDK_INT >= 35) {
+            webView.setPadding(0, getStatusBarHeight(), 0, 0);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             webView.setOnApplyWindowInsetsListener((view, insets) -> {
                 android.graphics.Insets statusBars =
                         insets.getInsets(WindowInsets.Type.statusBars());
-                view.setPadding(0, statusBars.top, 0, 0);
+                int topInset = statusBars.top > 0 ? statusBars.top : getStatusBarHeight();
+                view.setPadding(0, topInset, 0, 0);
                 return insets;
             });
             webView.requestApplyInsets();
@@ -99,5 +105,11 @@ public class MainActivity extends Activity {
     public void onBackPressed() {
         if (webView.canGoBack()) webView.goBack();
         else super.onBackPressed();
+    }
+
+    private int getStatusBarHeight() {
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) return getResources().getDimensionPixelSize(resourceId);
+        return Math.round(28 * getResources().getDisplayMetrics().density);
     }
 }
