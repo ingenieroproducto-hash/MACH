@@ -29,7 +29,7 @@ jobs:
 
       - name: Reconstruir proyecto Android
         run: |
-          cat mi-plan-diario-android-source/source.part.* > /tmp/mi-plan-source.b64
+          cat mi-plan-diario-android-source/source.chunk.* > /tmp/mi-plan-source.b64
           base64 --decode /tmp/mi-plan-source.b64 > /tmp/mi-plan-source.tar.gz
           echo '3fad47b6ccd54442bf5e95abaccbd78766ed6583ef88730ca809ffb56571c394  /tmp/mi-plan-source.tar.gz' | sha256sum --check
           tar -xzf /tmp/mi-plan-source.tar.gz
