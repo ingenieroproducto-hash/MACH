@@ -1,0 +1,67 @@
+name: Compilar Mi Plan Diario
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - mi-plan-diario-android
+    paths:
+      - 'mi-plan-diario-android-source/**'
+      - '.github/workflows/build-mi-plan-diario.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Descargar código
+        uses: actions/checkout@v4
+
+      - name: Reconstruir proyecto Android
+        run: |
+          cat mi-plan-diario-android-source/source.part.* > /tmp/mi-plan-source.b64
+          base64 --decode /tmp/mi-plan-source.b64 > /tmp/mi-plan-source.tar.gz
+          echo '3fad47b6ccd54442bf5e95abaccbd78766ed6583ef88730ca809ffb56571c394  /tmp/mi-plan-source.tar.gz' | sha256sum --check
+          tar -xzf /tmp/mi-plan-source.tar.gz
+
+      - name: Configurar Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Configurar Android SDK
+        run: |
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null || true
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-36" "build-tools;35.0.0"
+
+      - name: Configurar Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.13'
+
+      - name: Compilar APK instalable
+        working-directory: mi-plan-diario-android
+        run: gradle --no-daemon clean assembleDebug
+
+      - name: Verificar firma y paquete
+        run: |
+          APK="mi-plan-diario-android/app/build/outputs/apk/debug/app-debug.apk"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | head -n 12
+          cp "$APK" "Mi-Plan-Diario-v3.2-instalable.apk"
+          sha256sum "Mi-Plan-Diario-v3.2-instalable.apk" > "Mi-Plan-Diario-v3.2-instalable.sha256"
+
+      - name: Publicar APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Mi-Plan-Diario-v3.2-instalable
+          path: |
+            Mi-Plan-Diario-v3.2-instalable.apk
+            Mi-Plan-Diario-v3.2-instalable.sha256
+          if-no-files-found: error
+          retention-days: 30
