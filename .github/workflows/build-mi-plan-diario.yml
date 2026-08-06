@@ -8,6 +8,12 @@ on:
     paths:
       - 'mi-plan-diario-android-source/**'
       - '.github/workflows/build-mi-plan-diario.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'mi-plan-diario-android-source/**'
+      - '.github/workflows/build-mi-plan-diario.yml'
 
 permissions:
   contents: read
