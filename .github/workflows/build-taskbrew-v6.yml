@@ -22,7 +22,8 @@ jobs:
         run: |
           mkdir -p taskbrew-v6-work
           cat taskbrew-v6-build/chunk.00 \
-              taskbrew-v6-build/chunk.01 \
+              taskbrew-v6-build/chunk.01a \
+              taskbrew-v6-build/chunk.01b \
               taskbrew-v6-build/chunk.02 \
               taskbrew-v6-build/chunk.03 \
               taskbrew-v6-build/chunk.04 \
